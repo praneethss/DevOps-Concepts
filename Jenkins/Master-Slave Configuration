@@ -1,1 +1,14 @@
+Jenkins master slave configuration from ssh with .pem key
 
+
+Step 1: create 2 instances 
+  First instance should be installed with jenkins
+  Second with java
+  
+Step 2: copy second instances .pem key and create a same name file inside masters instance
+  then do chmod 400 DevOps.pem in both nodes
+  
+Step 3: manage jenkins->manage nodes->create node with ssh
+
+Step 4: manage credential with ssh with private key
+  paste the pem file inside insert key
