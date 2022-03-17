@@ -1,1 +1,34 @@
+#######ansible-master node commands#######
+>> sudo apt-get update
 
+>> sudo apt-get install software-properties-common
+
+>> sudo apt-add-repository ppa:ansible/ansible
+
+>> sudo apt-get update
+
+>> sudo apt-get install ansible
+
+######ansibel-slave node commands#######
+
+>> sudo apt-get update
+
+>> sudo apt-get install python
+
+######ansible-master node configuration#####
+
+>> ssh-keygen
+
+This command will generate the ssh key for the master node to communicate with slave node
+Copy the key inside "id_rsa.pub" and paste it over slave nodes "authorised_keys" folder
+
+**********Then on master node*********
+
+>> sudo nano etc/ansible/hosts
+
+edit the file with ip
+
+[production]  ##group name
+Slave1 ansible_ssh_host=54.211.0.255
+
+>> ansible -m ping all 
