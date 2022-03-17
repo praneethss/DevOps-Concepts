@@ -1,0 +1,127 @@
+****Requirement*****
+
+2 or 3 Ubuntu 20.04 LTS System with Minimal Installation
+Minimum 2 or more CPU, 3 GB RAM.
+Disable SWAP on All node
+SSH Access with sudo privileges
+
+***Ports***
+Master: 
+TCP	Inbound	6443*	
+TCP	Inbound	2379-2380	
+TCP	Inbound	10250	
+TCP	Inbound	10251	
+TCP	Inbound	10252	
+
+Worker:
+TCP	Inbound	10250
+TCP	Inbound	30000-32767
+
+****Installation Steps on both Master and Worker****
+
+swapoff -a
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo nano /etc/fstab
+sudo reboot
+sudo apt-get update
+
+1. Install Docker Container Runtime on All node (Master and Worker Nodes)
+
+Install below packages if not installed
+>> sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+Add the Docker official GPG Key
+>> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+Add the Docker APT repository
+>> echo   "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
+Update the System Packages
+>> sudo apt-get update -y
+
+Install docker community edition and container runtime on both master and worker node
+>> sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
+Add the Docker Daemon configurations to use systemd as the cgroup driver.
+>> cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
+Check docker images
+>> docker images
+
+2. Add Kubernetes GPG Key on All node
+
+Add Kubernetes GPG key in all node.
+>> sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+3. Add Kubernetes APT Repository on All node
+
+Add Kubernetes apt repository on all node for Ubuntu.
+>> echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+update the system packages
+>> sudo apt-get update
+
+4. Install Kubeadm,Kubelet and Kubectl on All Node
+
+Install kubeadm,kubelet and kubectl using below command.
+>> sudo apt-get install kubelet kubeadm kubectl
+
+Hold the packages to being upgrade
+>> sudo apt-mark hold kubelet kubeadm kubectl
+
+Edit this file with following content
+>> sudo nano /etc/docker/daemon.json
+{
+    "exec-opts": ["native.cgroupdriver=systemd"]
+}
+
+Then Restart
+>> sudo systemctl daemon-reload
+>> sudo systemctl restart docker
+>> sudo systemctl restart kubelet
+
+5. Initialize the Master node using kubeadm (on Master Node)
+
+Next initialize the master node using kubeadm.
+>> sudo kubeadm init --pod-network-cidr 10.0.0.0/16
+
+Create new ‘.kube’ configuration directory and copy the configuration ‘admin.conf’ from ‘/etc/kubernetes’ directory.
+
+sudo mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+To check kubeadm version.
+>> kubeadm version
+
+To check master node status
+>> kubectl get nodes
+
+6. Configure Pod Network and Verify Pod namespaces
+
+Install the Weave network plugin to communicate master and worker nodes.
+>> kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+****On the Worker Node****
+
+7. Join Worker Node to the Cluster
+
+Next Join two worker nodes to master.
+>> sudo kubeadm join 172.31.6.177:6443 --token vr5rat.seyprj6jvw4xy43m --discovery-token-ca-cert-hash sha256:4c9b53eb03744b4cf21c5bdacd712024eb09030561714cc5545838482c8017b3
+  
+ 
