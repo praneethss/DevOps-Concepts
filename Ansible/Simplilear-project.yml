@@ -1,0 +1,44 @@
+---
+- hosts: production
+  remote_user: ubuntu
+  become_user: root
+  tasks:
+    - name: Task - 1 Update APT package manager repositories cache
+      become: true
+      apt:
+        update_cache: yes
+
+    - name: Task -2 Install Java using Ansible
+      become: yes
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+           - openjdk-11-jdk
+
+    - name: Task -3 Check for Python
+      raw: test -e /usr/bin/python
+      changed_when: false
+      failed_when: false
+      register: check_python
+
+    - name: Task -4 Install Python
+      become: yes
+      raw: apt-get -y install python
+      when: check_python.rc != 0
+
+    - name: Task -5 get jenkins files
+      shell: wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+
+    - name: Task -6 setting up Jenkins
+      shell: sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+    
+    - name: Task -7 Install Jenkins
+      shell: sudo apt-get install -y jenkins
+
+    - name: task -8 Start & Enable Jenkins
+      systemd:
+        name: jenkins
+        state: started
+        enabled: true
