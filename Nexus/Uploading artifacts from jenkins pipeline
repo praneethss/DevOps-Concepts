@@ -1,0 +1,59 @@
+******Create a pipeline job from jenkins*******
+
+******Generate pipeline syntax******
+
+Nexus Version: NEXUS 3
+Protocol: HTTP
+Nexus URL: 34.207.65.141:8081
+Credentials: admin/****** (Nexus3)( Add credentials of nexus)
+ GroupId: com.vaadin.tutorial
+Version: 2.0
+Repository: Simple-app-release
+
+Add
+
+ArtifactId: addressbook
+Type: war
+Classifier: Leave blank
+File: target/addressbook-2.0.war
+
+******Pipeline code as follows:**********
+
+pipeline {
+    agent any
+
+    stages {
+        stage("clone code"){
+            steps{
+                git url: 'https://github.com/praneethss/addressbook.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh "mvn clean install package"
+            }
+        }
+        stage('Upload to Nexus'){
+            steps{
+                nexusArtifactUploader artifacts: [
+                    [
+                        artifactId: 'addressbook', 
+                        classifier: '', 
+                        file: 'target/addressbook-2.0.war', 
+                        type: 'war'
+                    ]
+                ], 
+                        credentialsId: 'Nexus3', 
+                        groupId: 'com.vaadin.tutorial', 
+                        nexusUrl: '34.207.65.141:8081', 
+                        nexusVersion: 'nexus3', 
+                        protocol: 'http', 
+                        repository: 'Simple-app-release/', 
+                        version: '2.0'
+            }
+        }
+    }
+}
+
+********* Reference video *********
+https://youtu.be/p_Wo3aqUJto
