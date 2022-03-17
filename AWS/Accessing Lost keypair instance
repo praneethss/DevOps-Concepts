@@ -1,0 +1,35 @@
+Step 1: Stop the instance
+
+Step 2: Detach the volume from the instance
+
+Step 3: Attach the Existing volume to the instance from recovery instance
+
+Step 4: Login to local using recovery instance 
+
+Step 5: Execute the following 
+
+>> sudo su
+
+>> lsblk
+loop0     7:0    0   25M  1 loop /snap/amazon-ssm-agent/4046
+loop1     7:1    0 55.5M  1 loop /snap/core18/2253
+loop2     7:2    0 61.9M  1 loop /snap/core20/1242
+loop3     7:3    0 67.2M  1 loop /snap/lxd/21835
+loop4     7:4    0 42.2M  1 loop /snap/snapd/14066
+xvda    202:0    0    8G  0 disk
+└─xvda1 202:1    0    8G  0 part /
+xvdf    202:80   0    8G  0 disk
+└─xvdf1 202:81   0    8G  0 part
+
+>> mkdir -p /var/recovery-disk
+>> mount -o nouuid /dev/xvdf1 /var/recovery-disk
+>> df -h 
+>> cat /home/ubuntu/.ssh/authorized_keys >> var/recovery-disk/home/ubuntu/.ssh/authorized_keys
+>> umount var/recovery-disk
+>> df -h 
+
+Step 6: Go to lost instance and detach the volume
+
+Step 7: Then attach the lost instances volume (Device should be /dev/sda1)
+
+Step 8: Now go back to the instance and start it and login without keys
