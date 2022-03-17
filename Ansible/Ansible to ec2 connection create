@@ -1,0 +1,13 @@
+Pre-requisites:
+ 1. Ansible Installed on controller
+ 2. Install python
+ >> sudo apt-get install python-pip -y
+ 
+ 3. Install boto for communcication between aws infra and ansible
+ >> sudo pip install boto boto3
+ >> sudo apt-get install python-boto -y
+ >> pip list boto | grep boto
+
+>> Create a IAM role in AWS with ec2fullaccess and attache it to the instance where your ansibl;e server running
+
+>> Then compose yaml file and execute the ansible playbook
