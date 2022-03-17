@@ -1,0 +1,108 @@
+If we want to establish communcication between two containers, First thing we need to do is
+
+Step 1: Establish a bridge between two container (Network Interface)
+
+create the network interface by this command
+
+>> docker network create web_server --driver bridge
+
+Check if any containers using that bridge
+
+>> docker inspect web_server
+[
+    {
+        "Name": "web_server",
+        "Id": "89568897ebfb2fd406b30b4498b67c2ed7e4b1185756a27c5ef9253cbdb2ef4e",
+        "Created": "2022-03-17T17:24:16.425804333Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+Step 2: Pull 2 container
+
+>> sudo docker pull nginx:1
+>> sudo docker pull alpine:3
+
+Step 3: Attach web_server network to the images and run
+
+>> sudo docker run -dit --name server --network web_server nginx:1
+>> sudo docker run -dit --name client --network web_server alpine:3
+
+Step 4: Check whether the containers added
+
+>> sudo docker inspect web_server
+        "Containers": {
+            "27853489e216036438d2e795a441b6d95a71b1840fbaeb6d5f82e3fbb949e688": {
+                "Name": "server",
+                "EndpointID": "49e45722483026aaddf98eaba4f1309ba5759f813cf19ffa1bb73c8dc58c7557",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "7dda797d0ecdbe71a450b3c58a69f1eb1c99904b8923a2ae06e36b068eaa7ca1": {
+                "Name": "client",
+                "EndpointID": "169b236a488c866f92a917908bffe4105bce028d7e6a9d442e2219634e53a272",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+Step 5: Login to the client container
+
+>> sudo docker attach client
+>> apk add curl
+>> curl http://server:80
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+
+************** END *****************
