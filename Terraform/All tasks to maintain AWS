@@ -1,7 +1,7 @@
 provider "aws" {
   region     = "us-east-1"
-  access_key = "AKIAYXGJNDDW5SHJDX5T"
-  secret_key = "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"
+  access_key = ""
+  secret_key = ""
 }
 
 ## Create Internet Gateway ##
