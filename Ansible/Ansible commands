@@ -1,1 +1,14 @@
+********Ansible ad-hoc commands*******
 
+>> ansible production -m copy -a "src=/home/ubuntu/file1 dest=/tmp/ansible"
+
+>> ansible production -m shell -a "mkdir file1"
+
+>> ansible production -m service -a "name=jenkins state=started" -become
+
+>> ansible production -m file -a "path=/home/ubuntu/file1 state=absent"
+
+
+**********Play-book Run************
+
+>> ansible-playbook -i hosts installation.yml
