@@ -1,0 +1,73 @@
+---
+- hosts: production
+  become: true
+  
+  tasks:
+    - name: Task-1 update
+      apt: 
+        update_cache: yes
+
+    - name: Task-2 Installing Java JDK 8
+      apt:
+        name: openjdk-8-jdk
+        state: latest
+
+    - name: Task-3 User and Group add for apache tomcat 
+      shell: groupadd tomcat && useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+      tags:
+      - user_add
+      ignore_errors: true
+
+    - name: Task-4 Installing Curl
+      apt:
+        name: curl
+        state: latest
+
+    - name: Task-5 Download tomcat to server
+      shell: wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.77/bin/apache-tomcat-8.5.77.tar.gz
+      args:
+        chdir: /opt
+      ignore_errors: true
+      tags:
+      - tom_down
+
+    - name: Task-6 Creating Tomcat directory
+      command: mkdir /opt/tomcat
+      tags:
+      - dir_create
+      ignore_errors: true
+
+    - name: Task-7 Unzip tomcat
+      shell: tar -xvzf /opt/apache-tomcat-8.5.77.tar.gz -C /opt/tomcat --strip-components=1
+      ignore_errors: true
+      tags:
+      - tar_tag
+
+    - name: Task-8 Updating permission.
+      command: "{{ item }}"
+      with_items:
+        - chown -R tomcat:tomcat /opt/tomcat
+        - chmod -R g+r /opt/tomcat/conf
+        - chmod g+x /opt/tomcat/conf
+      ignore_errors: true
+
+    - name: Task-9 Creating Service for tomcat
+      file:
+        path: /etc/systemd/system/tomcat.service
+        state: touch
+        mode: u+rwx,g-rwx,o-x
+      ignore_errors: true
+
+    - name: Task-9 download foo.conf into tomcat.service
+      get_url:
+        url: https://raw.githubusercontent.com/aftab70/Apache_Tomcat/master/tomcat_services
+        dest: /etc/systemd/system/tomcat.service
+      ignore_errors: true
+
+    - name: Task-10 Reload daemon 
+      command: sudo systemctl daemon-reload
+
+    - name: task-11 Starting the tomcat Service
+      service:
+        name: tomcat
+        state: started
