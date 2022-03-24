@@ -8,6 +8,10 @@
 
 >> ansible production -m file -a "path=/home/ubuntu/file1 state=absent"
 
+>> ansible production -m user -a "name=ubuntu"
+
+>> ansible production -m debug -a "msg=hello"
+
 
 **********Play-book Run************
 
