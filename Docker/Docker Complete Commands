@@ -1,0 +1,15 @@
+********Docker Commands********
+
+docker build -t 
+docker run -d --name web -p 8080:80 jenkins:latest
+docker images
+docker ps -a
+docker rmi -f <image_name>
+docker rm -f <container_id>
+docker rm -f ${docker ps -aq}
+docker rmi -f ${docker images}
+docker stop container_id
+docker pause container_id
+docker unpause conatiner_id
+docker start container_id
+
