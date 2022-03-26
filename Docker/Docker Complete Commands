@@ -12,4 +12,35 @@ docker stop container_id
 docker pause container_id
 docker unpause conatiner_id
 docker start container_id
+docker exec -it <container_id> /bin/bash
+docker cp /home/ubuntu/file <container_id>:/home
+docker save -o web.tar <image_id>
+docker load -i web.tar
 
+*******Docker Swarm Commands*********
+
+docker info | grep -i swarm
+docker swarm init
+docker swarm leave
+docker swarm join-token manager
+docker swarm join-token worker
+docker node ls
+docker node update --availability drain ip-172.31.48.120
+docker node promote ip-172.31.48.120
+docker node demote ip-172.31.48.120
+docker node ps <ID>
+docker node rm <ip>
+docker service create --name web -p 8080:80 nginx
+docker service create --replicas 3 --name web -p 8080:80 nginx
+docker service scale web=6
+docker service ls
+docker service ps <service_id>
+docker service update --image <image name> <service name>
+docker service update --rollback web
+docker service update --update-failure-action=rollback web
+docker service rm <id>
+docker stack deploy -c docker-compose.yml web
+docker stack ls
+docker stack ps <name>
+docker config create web sample.conf
+docker service create --name web --config src=test.config,target=/tmp/sample.conf -p 8080:80 nginx
