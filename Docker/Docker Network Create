@@ -1,1 +1,24 @@
+step 1: Create a network bridge
 
+>> docker network create My-Network
+
+>> docker network ls
+725ded8f93c2   My-Network   bridge    local
+cc6f20f411bc   bridge       bridge    local
+23fa55aa7585   host         host      local
+fa191798c159   none         null      local
+
+Step 2: Create 2 Container and attach it to the network
+
+>> docker run -d --name web --net My-Network -p 8080:80 nginx:latest
+>> docker run -d --name web-1 --net My-Network -p 8081:80 nginx:latest
+
+>> docker inspect web | grep IPAddress
+"SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "172.18.0.2",
+                    
+>> docker exec -it <container_id> /bin/bash
+>> apt update
+>> apt install wget
+>> wget -i -O - 172.18.0.2:8080
