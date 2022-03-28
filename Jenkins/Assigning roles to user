@@ -1,0 +1,8 @@
+Step 1: Install the role-based strategy plugin
+
+Step 2: Create a user
+
+Step 3: Manage jenkins->Manage and assign roles
+
+First manage the roles by creating them 
+Then assign the created role to the user
