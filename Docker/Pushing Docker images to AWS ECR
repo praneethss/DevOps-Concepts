@@ -1,0 +1,11 @@
+Step 1: Create a aws ECR repo
+
+Step 2: Install aws cli from commandline
+
+Step 3: Configure the aws credentials
+
+Step 4: and then login to aws ecr using below command with push commands
+
+Step 5: tag your image with repo name
+
+Step 6: Docker push
