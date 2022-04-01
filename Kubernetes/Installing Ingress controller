@@ -1,1 +1,20 @@
+######There are multiple ways to install the NGINX ingress controller#######
+
+1. with Helm, using the project repository chart;
+2. with kubectl apply, using YAML manifests;
+3. with specific addons (e.g. for minikube or MicroK8s)
+
+#######Installing Helm#########
+
+$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+$ chmod 700 get_helm.sh
+$ ./get_helm.sh
+
+#######Installing ingress controller with helm##########
+
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+
+
 Refer : https://kubernetes.github.io/ingress-nginx/deploy/
